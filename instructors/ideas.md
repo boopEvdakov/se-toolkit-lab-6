@@ -2,31 +2,31 @@
 
 - [Course - TODO](#course---todo)
 - [Lab 5 - TODO](#lab-5---todo)
-  - [Lab 5 - Backlog](#lab-5---backlog)
-  - [Lab 5 - Repo](#lab-5---repo)
-  - [Lab 5 - Conventions](#lab-5---conventions)
-  - [Lab 5 - Config](#lab-5---config)
-  - [Lab 5 - Skills](#lab-5---skills)
-  - [Lab 5 - Instructors](#lab-5---instructors)
-  - [Lab 5 - Wiki](#lab-5---wiki)
-  - [Lab 5 - Docs](#lab-5---docs)
-  - [Lab 5 - Contributing](#lab-5---contributing)
-  - [Lab 5 - Git workflow](#lab-5---git-workflow)
-  - [Lab 5 - Autochecker](#lab-5---autochecker)
-  - [Lab 5 - Setup](#lab-5---setup)
-  - [Lab 5 - Task 1](#lab-5---task-1)
-  - [Lab 5 - Task 2](#lab-5---task-2)
-  - [Lab 5 - Task 3](#lab-5---task-3)
-  - [Lab 5 - VM](#lab-5---vm)
-  - [Lab 5 - VS Code](#lab-5---vs-code)
-  - [Lab 5 - Architecture](#lab-5---architecture)
-- [Next labs - TODO](#next-labs---todo)
-  - [Lab Observability - Ideas](#lab-observability---ideas)
-  - [Lab Telegram Bot - Tasks](#lab-telegram-bot---tasks)
-- [Lab 5 - Done](#lab-5---done)
-  - [Lab 5 - Done - Repository](#lab-5---done---repository)
-  - [Lab 5 - Done - Conventions](#lab-5---done---conventions)
-  - [Done - Skills](#done---skills)
+  - [Lab 5 - TODO - Backlog](#lab-5---todo---backlog)
+  - [Lab 5 - TODO - Repo](#lab-5---todo---repo)
+  - [Lab 5 - TODO - Conventions](#lab-5---todo---conventions)
+  - [Lab 5 - TODO - Config](#lab-5---todo---config)
+  - [Lab 5 - TODO - Skills](#lab-5---todo---skills)
+  - [Lab 5 - TODO - Instructors](#lab-5---todo---instructors)
+  - [Lab 5 - TODO - Wiki](#lab-5---todo---wiki)
+  - [Lab 5 - TODO - Docs](#lab-5---todo---docs)
+  - [Lab 5 - TODO - Contributing](#lab-5---todo---contributing)
+  - [Lab 5 - TODO - Git workflow](#lab-5---todo---git-workflow)
+  - [Lab 5 - TODO - Autochecker](#lab-5---todo---autochecker)
+  - [Lab 5 - TODO - Setup](#lab-5---todo---setup)
+  - [Lab 5 - TODO - Task 1](#lab-5---todo---task-1)
+  - [Lab 5 - TODO - Task 2](#lab-5---todo---task-2)
+  - [Lab 5 - TODO - Task 3](#lab-5---todo---task-3)
+  - [Lab 5 - TODO - VM](#lab-5---todo---vm)
+  - [Lab 5 - TODO - VS Code](#lab-5---todo---vs-code)
+  - [Lab 5 - TODO - Architecture](#lab-5---todo---architecture)
+- [Lab 5 - DONE](#lab-5---done)
+  - [Lab 5 - DONE - Repository](#lab-5---done---repository)
+  - [Lab 5 - DONE - Conventions](#lab-5---done---conventions)
+  - [Lab 5 - DONE - Skills](#lab-5---done---skills)
+- [Lab Observability - TODO](#lab-observability---todo)
+  - [Lab Observability - TODO - Backlog](#lab-observability---todo---backlog)
+  - [Lab Telegram Bot - TODO - Task 2](#lab-telegram-bot---todo---task-2)
 - [Future Lab](#future-lab)
   - [Future Lab - VM setup](#future-lab---vm-setup)
 
@@ -36,13 +36,13 @@
 
 ## Lab 5 - TODO
 
-### Lab 5 - Backlog
+### Lab 5 - TODO - Backlog
 
-### Lab 5 - Repo
+### Lab 5 - TODO - Repo
 
 - move instructors/context/conventions and docs/contributing/conventions to contributing/conventions
 
-### Lab 5 - Conventions
+### Lab 5 - TODO - Conventions
 
 - indented note is a block quote
 - should a section in a sequence of steps assume the previous step?
@@ -68,7 +68,7 @@
 - setup-simple.md - a simpler version of setup.md
   must be in sync
 
-### Lab 5 - Config
+### Lab 5 - TODO - Config
 
 - .env.docker.secret: update caddy port - should be the biggest
 - pyproject: return test-unit
@@ -77,7 +77,7 @@
 - Fix config after the migration from the older repo
 - Move constants with `CONST_` prefix from `.env.docker.example` to `.env.const`
 
-### Lab 5 - Skills
+### Lab 5 - TODO - Skills
 
 - fix adjacent links
 - don't use claude-specific words in skills
@@ -93,13 +93,13 @@
 - skill /explain-step-in-russian
   gives the same instructions as explain-step but in Russian
 
-### Lab 5 - Instructors
+### Lab 5 - TODO - Instructors
 
 - goal: interact with the database, not just observe
 - Rename instructors/lab-design to instructors/meetings
 - Use instructors/meetings just for storing meeting notes, not for the lab design.
 
-### Lab 5 - Wiki
+### Lab 5 - TODO - Wiki
 
 - [?] use mdsh for tool output
 - vm docs: is this true? "# This solution won't work outside the University network."
@@ -114,21 +114,21 @@
   Need browser flow for free requests
   Therefore, will have to run on the laptop and connect by ssh
 
-### Lab 5 - Docs
+### Lab 5 - TODO - Docs
 
 - GitHub Pages with good full-text search
 
-### Lab 5 - Contributing
+### Lab 5 - TODO - Contributing
 
 - github workflows: allow PRs with [CONTRIBUTE] prefix
 - github issues: add issue template for bugs in the lab, e.g. [LAB BUG]
 
-### Lab 5 - Git workflow
+### Lab 5 - TODO - Git workflow
 
 - tip: suggest students to use `skill commit`
 - update diagram to mention pull from upstream
 
-### Lab 5 - Autochecker
+### Lab 5 - TODO - Autochecker
 
 - autochecker API:
   - clarify the formatting of the password
@@ -136,7 +136,7 @@
 - autochecker: check the file submission size
   file attached to an issue on GitHub
 
-### Lab 5 - Setup
+### Lab 5 - TODO - Setup
 
 - Remove info about the database table and data
   They were loaded from init.sql in the previous lab
@@ -158,36 +158,62 @@
 
 - The instructions aren't guaranteed to work outside of Linux or macOS. This is why we require to use WSL
 
-### Lab 5 - Task 1
+### Lab 5 - TODO - Task 1
 
 - line break after the curl command
 - update autochecker API
 
-### Lab 5 - Task 2
+### Lab 5 - TODO - Task 2
 
 - tasks.test -> tasks.test-unit
 
-### Lab 5 - Task 3
+### Lab 5 - TODO - Task 3
 
 - Show histogram
 
-### Lab 5 - VM
+### Lab 5 - TODO - VM
 
 - connect by remote ssh - check your ip to understand where you are
 - [?] `Remote-SSH: Connect to Host...`
   - can't find ssh config in Linux
 
-### Lab 5 - VS Code
+### Lab 5 - TODO - VS Code
 
 - Default theme - Monokai
 
-### Lab 5 - Architecture
+### Lab 5 - TODO - Architecture
 
 - `.env.local.example` - run outside of Docker
   Alternative: enable reload in local development
 
-## Next labs - TODO
+## Lab 5 - DONE
 
+### Lab 5 - DONE - Repository
+
+- [x] Move ideas to the instructors/ideas.md.
+
+### Lab 5 - DONE - Conventions
+
+- [x] conventions: prohibit agent-specific language in skills
+      see docs/contributing/conventions/skills.md
+
+### Lab 5 - DONE - Skills
+
+- [x] fix /fix-file-by-conventions skill: write title instead of cross-out in the task report.
+  Solution: cross-out, then use a skill for clearing
+
+- [x] lab-prompts.md? - prompts for agents
+  - bundle all instructions for task 1 in a readable doc
+  
+  Solution: We'll add a skill that explains a particular step.
+
+## Lab Observability - TODO
+
+### Lab Observability - TODO - Backlog
+
+- enable logging
+- Implement a Status page like <https://status.claude.com/>
+   Must be a separate service that checks health. Grafana?
 - test front
 - caddy https
 - include logging
@@ -197,36 +223,9 @@
 - setup: install everything via nix
 - grafana later when we have multiple apps
 
-### Lab Observability - Ideas
-
-- enable logging
-- Implement a Status page like <https://status.claude.com/>
-   Must be a separate service that checks health. Grafana?
-
-### Lab Telegram Bot - Tasks
+### Lab Telegram Bot - TODO - Task 2
 
 - telegram bot task - create an issue from a group chat.
-
-## Lab 5 - Done
-
-### Lab 5 - Done - Repository
-
-- [x] Move ideas to the instructors/ideas.md.
-
-### Lab 5 - Done - Conventions
-
-- [x] conventions: prohibit agent-specific language in skills
-      see docs/contributing/conventions/skills.md
-
-### Lab 5 - Done - Skills
-
-- [x] fix /fix-file-by-conventions skill: write title instead of cross-out in the task report.
-  Solution: cross-out, then use a skill for clearing
-
-- [x] lab-prompts.md? - prompts for agents
-  - bundle all instructions for task 1 in a readable doc
-  
-  Solution: We'll add a skill that explains a particular step.
 
 ## Future Lab
 
