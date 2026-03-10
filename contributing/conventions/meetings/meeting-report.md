@@ -232,7 +232,7 @@ Speaker A proposed PostgreSQL, citing its JSON support for flexible schemas. Spe
 
 ### 4.8. Open questions
 
-Things that were raised but not resolved — including proposals, hypotheticals, and "what if" suggestions that did not reach a conclusion. Write each open question as a subsection heading in the format `### S.N. Open question N: Title`. Include context on why they remain open, any preliminary opinions expressed, and any disagreements that prevented resolution. Cross-reference related [Decisions](#47-decisions) where applicable.
+Things that were raised but not resolved — including proposals, hypotheticals, and "what if" suggestions that did not reach a conclusion. Write each open question as a subsection heading in the format `### S.N. Open question N: Title`. Include context on why they remain open, any preliminary opinions expressed, and any disagreements that prevented resolution. Cross-reference related decision items where applicable.
 
 ### 4.9. Status updates
 
