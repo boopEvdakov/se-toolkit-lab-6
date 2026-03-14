@@ -107,6 +107,49 @@ def list_files(path: str) -> str:
         return f"Error listing directory: {e}"
 
 
+def query_api(method: str, path: str, body: str = None) -> str:
+    """
+    Call the backend API with authentication.
+
+    Args:
+        method: HTTP method (GET, POST, etc.)
+        path: API path (e.g., '/items/', '/analytics/completion-rate')
+        body: Optional JSON request body for POST/PUT requests
+
+    Returns:
+        JSON string with status_code and body, or error message
+    """
+    api_base_url = os.getenv("AGENT_API_BASE_URL", "http://localhost:42002")
+    lms_api_key = os.getenv("LMS_API_KEY")
+
+    if not lms_api_key:
+        return "Error: LMS_API_KEY not configured in environment"
+
+    url = f"{api_base_url}{path}"
+    headers = {"Content-Type": "application/json", "X-API-Key": lms_api_key}
+
+    print(f"Calling API: {method} {url}", file=sys.stderr)
+
+    try:
+        if method.upper() == "GET":
+            response = requests.get(url, headers=headers, timeout=30)
+        elif method.upper() == "POST":
+            data = json.loads(body) if body else {}
+            response = requests.post(url, headers=headers, json=data, timeout=30)
+        else:
+            return f"Error: Unsupported method: {method}"
+
+        result = {
+            "status_code": response.status_code,
+            "body": response.json() if response.text else None,
+        }
+        return json.dumps(result)
+    except requests.exceptions.RequestException as e:
+        return f"Error: API request failed: {e}"
+    except json.JSONDecodeError as e:
+        return f"Error: Invalid JSON response: {e}"
+
+
 # Tool definitions for LLM
 TOOLS = [
     {
@@ -143,18 +186,48 @@ TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "query_api",
+            "description": "Call the backend API to query data, check status codes, or test endpoints",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "method": {
+                        "type": "string",
+                        "description": "HTTP method (GET, POST, etc.)",
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "API path (e.g., '/items/', '/analytics/completion-rate')",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Optional JSON request body for POST/PUT requests",
+                    },
+                },
+                "required": ["method", "path"],
+            },
+        },
+    },
 ]
 
 # Tool name to function mapping
-TOOL_FUNCTIONS = {"read_file": read_file, "list_files": list_files}
+TOOL_FUNCTIONS = {
+    "read_file": read_file,
+    "list_files": list_files,
+    "query_api": query_api,
+}
 
-SYSTEM_PROMPT = """You are a helpful documentation assistant. You have access to tools that let you read files and list directories in a project repository.
+SYSTEM_PROMPT = """You are a helpful documentation assistant. You have access to tools that let you read files, list directories, and query the backend API.
 
 When asked a question about the project:
 1. Use `list_files` to explore the directory structure if needed
-2. Use `read_file` to read relevant documentation files
-3. Find the answer in the files you read
-4. Include the source reference (file path and section anchor if applicable)
+2. Use `read_file` to read relevant documentation files or source code
+3. Use `query_api` to query live data from the backend, check status codes, or test API endpoints
+4. Find the answer in the files you read or the API responses
+5. Include the source reference (file path and section anchor if applicable)
 
 Always be specific about which file contains the answer. Format section references as: `wiki/filename.md#section-anchor`
 
@@ -287,7 +360,7 @@ def run_agent(question: str) -> dict:
             continue
 
         # No tool calls - extract final answer
-        answer = response.get("content", "")
+        answer = response.get("content") or ""
         source = extract_source_from_tool_calls(tool_calls_log)
 
         return {"answer": answer, "source": source, "tool_calls": tool_calls_log}

@@ -120,6 +120,48 @@ def test_agent_security_path_traversal():
     print("✓ Path traversal blocked")
 
 
+def test_agent_uses_query_api_for_data():
+    """Test that agent uses query_api for data questions."""
+    result = run_agent("How many items are in the database? Query the API.")
+
+    assert result.returncode == 0, f"Agent failed: {result.stderr}"
+
+    data = parse_output(result)
+
+    # Check that tool_calls is not empty
+    assert len(data["tool_calls"]) > 0, "Expected tool calls but got none"
+
+    # Check that query_api was used
+    tool_names = [call.get("tool") for call in data["tool_calls"]]
+    assert "query_api" in tool_names, (
+        f"Expected 'query_api' in tool_calls, got: {tool_names}"
+    )
+
+    print(f"✓ query_api tool used. Tools: {tool_names}")
+
+
+def test_agent_uses_read_file_for_framework():
+    """Test that agent uses read_file for framework questions."""
+    result = run_agent(
+        "What Python web framework does the backend use? Read the source code."
+    )
+
+    assert result.returncode == 0, f"Agent failed: {result.stderr}"
+
+    data = parse_output(result)
+
+    # Check that tool_calls is not empty
+    assert len(data["tool_calls"]) > 0, "Expected tool calls but got none"
+
+    # Check that read_file was used
+    tool_names = [call.get("tool") for call in data["tool_calls"]]
+    assert "read_file" in tool_names, (
+        f"Expected 'read_file' in tool_calls, got: {tool_names}"
+    )
+
+    print(f"✓ read_file tool used. Source: {data.get('source', '')}")
+
+
 if __name__ == "__main__":
     print("Running test_agent_outputs_valid_json...")
     test_agent_outputs_valid_json()
@@ -135,6 +177,14 @@ if __name__ == "__main__":
 
     print("Running test_agent_security_path_traversal...")
     test_agent_security_path_traversal()
+    print()
+
+    print("Running test_agent_uses_query_api_for_data...")
+    test_agent_uses_query_api_for_data()
+    print()
+
+    print("Running test_agent_uses_read_file_for_framework...")
+    test_agent_uses_read_file_for_framework()
     print()
 
     print("All tests passed!")
