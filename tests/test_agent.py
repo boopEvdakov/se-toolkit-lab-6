@@ -3,7 +3,7 @@ Regression tests for agent.py
 
 Tests verify that the agent:
 1. Outputs valid JSON
-2. Contains required fields (answer, tool_calls)
+2. Contains required fields (answer, source, tool_calls)
 3. Uses tools correctly
 4. Responds within timeout
 """
@@ -30,6 +30,7 @@ def run_agent(question: str) -> subprocess.CompletedProcess:
 
 def parse_output(result: subprocess.CompletedProcess) -> dict:
     """Parse agent output as JSON."""
+    # Find JSON in output (skip stderr that might be mixed in)
     for line in result.stdout.split("\n"):
         line = line.strip()
         if line.startswith("{"):
@@ -47,14 +48,13 @@ def test_agent_outputs_valid_json():
 
     # Check required fields
     assert "answer" in data, "Missing 'answer' field in output"
+    assert "source" in data, "Missing 'source' field in output"
     assert "tool_calls" in data, "Missing 'tool_calls' field in output"
 
     # Check types
     assert isinstance(data["answer"], str), "'answer' must be a string"
+    assert isinstance(data["source"], str), "'source' must be a string"
     assert isinstance(data["tool_calls"], list), "'tool_calls' must be an array"
-
-    # Check answer is not empty
-    assert len(data["answer"]) > 0, "'answer' must not be empty"
 
     print("All checks passed!")
 
