@@ -244,18 +244,51 @@ def call_llm(messages: list[dict], tools: list[dict] | None = None) -> dict:
         print("Error: Missing LLM configuration in .env.agent.secret", file=sys.stderr)
         sys.exit(1)
 
-    url = f"{api_base}/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-    }
-    if api_key and api_key != "ollama":
-        headers["Authorization"] = f"Bearer {api_key}"
+    # Detect if using Ollama (native API) or OpenAI-compatible API
+    is_ollama = api_key == "ollama" or "11434" in api_base
 
-    payload = {"model": model, "messages": messages, "stream": False}
+    if is_ollama:
+        # Use Ollama native API format
+        url = f"{api_base}/api/chat"
+        headers = {"Content-Type": "application/json"}
 
-    if tools:
-        payload["tools"] = tools
-        payload["tool_choice"] = "auto"
+        # Convert messages to Ollama format
+        ollama_messages = []
+        for msg in messages:
+            ollama_msg = {"role": msg["role"], "content": msg["content"]}
+            if msg.get("tool_call_id"):
+                ollama_msg["name"] = msg.get("tool_call_id", "")
+            ollama_messages.append(ollama_msg)
+
+        payload = {"model": model, "messages": ollama_messages, "stream": False}
+
+        # Add tools in Ollama format
+        if tools:
+            payload["tools"] = []
+            for tool in tools:
+                ollama_tool = {
+                    "type": "function",
+                    "function": {
+                        "name": tool["function"]["name"],
+                        "description": tool["function"].get("description", ""),
+                        "parameters": tool["function"]["parameters"],
+                    },
+                }
+                payload["tools"].append(ollama_tool)
+    else:
+        # Use OpenAI-compatible API format
+        url = f"{api_base}/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+        }
+        if api_key and api_key != "ollama":
+            headers["Authorization"] = f"Bearer {api_key}"
+
+        payload = {"model": model, "messages": messages, "stream": False}
+
+        if tools:
+            payload["tools"] = tools
+            payload["tool_choice"] = "auto"
 
     print(f"Calling LLM API: {url}", file=sys.stderr)
     print(f"Model: {model}", file=sys.stderr)
@@ -268,7 +301,31 @@ def call_llm(messages: list[dict], tools: list[dict] | None = None) -> dict:
         sys.exit(1)
 
     data = response.json()
-    return data["choices"][0]["message"]
+
+    # Parse response based on API format
+    if is_ollama:
+        # Ollama native format
+        message = data.get("message", {})
+        # Convert tool calls if present
+        if data.get("tool_calls"):
+            message["tool_calls"] = []
+            for tc in data["tool_calls"]:
+                message["tool_calls"].append(
+                    {
+                        "id": tc.get("id", tc.get("function", {}).get("name", "")),
+                        "type": "function",
+                        "function": {
+                            "name": tc.get("function", {}).get("name", ""),
+                            "arguments": json.dumps(
+                                tc.get("function", {}).get("arguments", {})
+                            ),
+                        },
+                    }
+                )
+        return message
+    else:
+        # OpenAI-compatible format
+        return data["choices"][0]["message"]
 
 
 def execute_tool(name: str, args: dict) -> str:
