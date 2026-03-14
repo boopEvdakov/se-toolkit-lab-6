@@ -106,12 +106,27 @@ def test_agent_security_path_traversal():
 
     data = parse_output(result)
 
-    # Should have an error message about invalid path
-    assert "Error" in data["answer"] or len(data["tool_calls"]) == 0, (
-        "Agent should reject path traversal attempts"
-    )
-
-    print("✓ Path traversal blocked")
+    # Tool should either reject the path or return an error result
+    if len(data["tool_calls"]) > 0:
+        # If tool was called, it should have an error result
+        for call in data["tool_calls"]:
+            if "Error" in call.get("result", ""):
+                print("✓ Path traversal blocked with error")
+                return
+        # Or agent should mention error in answer
+        if (
+            "Error" in data.get("answer", "")
+            or "not allowed" in data.get("answer", "").lower()
+        ):
+            print("✓ Path traversal blocked")
+            return
+        assert False, "Tool should return error for path traversal"
+    else:
+        # No tool calls - answer should mention error/restriction
+        assert "Error" in data["answer"] or "not allowed" in data["answer"].lower(), (
+            "Agent should reject path traversal attempts"
+        )
+        print("✓ Path traversal blocked")
 
 
 def test_agent_uses_query_api_for_data():
