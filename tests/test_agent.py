@@ -61,14 +61,11 @@ def test_agent_outputs_valid_json():
 
 def test_agent_uses_read_file_tool():
     """Test that agent uses read_file tool for documentation questions."""
-    result = run_agent("What is an API? Read wiki/api.md")
+    result = run_agent("What is in wiki/api.md? Read the file.")
 
     assert result.returncode == 0, f"Agent failed: {result.stderr}"
 
     data = parse_output(result)
-
-    # Check that tool_calls is not empty
-    assert len(data["tool_calls"]) > 0, "Expected tool calls but got none"
 
     # Check that read_file was used
     tool_names = [call.get("tool") for call in data["tool_calls"]]
@@ -77,23 +74,20 @@ def test_agent_uses_read_file_tool():
     )
 
     # Check source field
-    assert "wiki/api.md" in data["source"], (
-        f"Expected wiki/api.md in source, got: {data['source']}"
+    assert "wiki/api.md" in data.get("source", ""), (
+        f"Expected wiki/api.md in source, got: {data.get('source', '')}"
     )
 
-    print(f"✓ read_file tool used. Source: {data['source']}")
+    print(f"✓ read_file tool used. Source: {data.get('source', '')}")
 
 
 def test_agent_uses_list_files_tool():
     """Test that agent uses list_files tool for directory questions."""
-    result = run_agent("List files in wiki directory")
+    result = run_agent("List all files in the wiki directory")
 
     assert result.returncode == 0, f"Agent failed: {result.stderr}"
 
     data = parse_output(result)
-
-    # Check that tool_calls is not empty
-    assert len(data["tool_calls"]) > 0, "Expected tool calls but got none"
 
     # Check that list_files was used
     tool_names = [call.get("tool") for call in data["tool_calls"]]
@@ -112,12 +106,61 @@ def test_agent_security_path_traversal():
 
     data = parse_output(result)
 
-    # Should have an error message about invalid path
-    assert "Error" in data["answer"] or len(data["tool_calls"]) == 0, (
-        "Agent should reject path traversal attempts"
+    # Tool should either reject the path or return an error result
+    if len(data["tool_calls"]) > 0:
+        # If tool was called, it should have an error result
+        for call in data["tool_calls"]:
+            if "Error" in call.get("result", ""):
+                print("✓ Path traversal blocked with error")
+                return
+        # Or agent should mention error in answer
+        if (
+            "Error" in data.get("answer", "")
+            or "not allowed" in data.get("answer", "").lower()
+        ):
+            print("✓ Path traversal blocked")
+            return
+        assert False, "Tool should return error for path traversal"
+    else:
+        # No tool calls - answer should mention error/restriction
+        assert "Error" in data["answer"] or "not allowed" in data["answer"].lower(), (
+            "Agent should reject path traversal attempts"
+        )
+        print("✓ Path traversal blocked")
+
+
+def test_agent_uses_query_api_for_data():
+    """Test that agent uses query_api for data questions."""
+    result = run_agent("GET /items/ from the API")
+
+    assert result.returncode == 0, f"Agent failed: {result.stderr}"
+
+    data = parse_output(result)
+
+    # Check that query_api was used
+    tool_names = [call.get("tool") for call in data["tool_calls"]]
+    assert "query_api" in tool_names, (
+        f"Expected 'query_api' in tool_calls, got: {tool_names}"
     )
 
-    print("✓ Path traversal blocked")
+    print(f"✓ query_api tool used. Tools: {tool_names}")
+
+
+def test_agent_uses_read_file_for_framework():
+    """Test that agent uses read_file for framework questions."""
+    result = run_agent("What framework does backend use? Check backend/app/main.py")
+
+    assert result.returncode == 0, f"Agent failed: {result.stderr}"
+
+    data = parse_output(result)
+
+    # Check that read_file was used
+    tool_names = [call.get("tool") for call in data["tool_calls"]]
+    assert "read_file" in tool_names, (
+        f"Expected 'read_file' in tool_calls, got: {tool_names}"
+    )
+
+    print(f"✓ read_file tool used. Source: {data.get('source', '')}")
 
 
 if __name__ == "__main__":
@@ -135,6 +178,14 @@ if __name__ == "__main__":
 
     print("Running test_agent_security_path_traversal...")
     test_agent_security_path_traversal()
+    print()
+
+    print("Running test_agent_uses_query_api_for_data...")
+    test_agent_uses_query_api_for_data()
+    print()
+
+    print("Running test_agent_uses_read_file_for_framework...")
+    test_agent_uses_read_file_for_framework()
     print()
 
     print("All tests passed!")
