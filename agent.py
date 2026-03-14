@@ -333,12 +333,16 @@ def run_agent(question: str) -> dict:
             for tool_call in response["tool_calls"]:
                 func = tool_call.get("function", {})
                 name = func.get("name", "")
-                args_str = func.get("arguments", "{}")
+                args_raw = func.get("arguments", "{}")
 
+                # Handle both string and dict arguments
                 try:
-                    args = (
-                        json.loads(args_str) if isinstance(args_str, str) else args_str
-                    )
+                    if isinstance(args_raw, str):
+                        args = json.loads(args_raw)
+                    elif isinstance(args_raw, dict):
+                        args = args_raw
+                    else:
+                        args = {}
                 except json.JSONDecodeError:
                     args = {}
 
@@ -349,10 +353,12 @@ def run_agent(question: str) -> dict:
                 tool_calls_log.append({"tool": name, "args": args, "result": result})
 
                 # Append tool result to messages
+                # Generate a tool_call_id if not provided (some APIs don't include it)
+                tool_call_id = tool_call.get("id") or f"{name}_{len(tool_calls_log)}"
                 messages.append(
                     {
                         "role": "tool",
-                        "tool_call_id": tool_call.get("id", ""),
+                        "tool_call_id": tool_call_id,
                         "content": result,
                     }
                 )
