@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements an AI agent (`agent.py`) that answers questions using a Large Language Model (LLM). The agent is designed to be extensible - in future tasks it will gain tools and an agentic loop.
+This project implements an AI agent (`agent.py`) that answers questions using a Large Language Model (LLM). The agent is designed to be extensible — in future tasks it will gain tools and an agentic loop.
 
 ## Architecture
 
@@ -15,6 +15,7 @@ User Question (CLI) → agent.py → LLM API → JSON Response
 ### 1. Agent CLI (`agent.py`)
 
 The main entry point. Responsibilities:
+
 - Parse command-line arguments
 - Load environment configuration
 - Call the LLM API
@@ -31,6 +32,7 @@ The main entry point. Responsibilities:
 ### 3. LLM Backend (Ollama on VM)
 
 We use **Ollama** running on the VM with the **Qwen 2.5 3B** model:
+
 - No API key required
 - No rate limits
 - Runs locally on the VM
@@ -78,6 +80,7 @@ The agent outputs a single JSON line to stdout:
 The agent supports any OpenAI-compatible API. To switch providers, edit `.env.agent.secret`:
 
 **OpenRouter:**
+
 ```bash
 LLM_API_KEY=sk-or-v1-...
 LLM_API_BASE=https://openrouter.ai/api/v1
