@@ -223,15 +223,15 @@ TOOL_FUNCTIONS = {
 SYSTEM_PROMPT = """You are a helpful documentation assistant. You have access to tools that let you read files, list directories, and query the backend API.
 
 When asked a question about the project:
-1. Use `list_files` to explore the directory structure if needed
-2. Use `read_file` to read relevant documentation files or source code
-3. Use `query_api` to query live data from the backend, check status codes, or test API endpoints
-4. Find the answer in the files you read or the API responses
-5. Include the source reference (file path and section anchor if applicable)
+1. For wiki/documentation questions: Use `read_file` to read the specific wiki file (e.g., wiki/github.md, wiki/ssh.md)
+2. For source code questions: Use `read_file` to read the specific source file (e.g., backend/app/main.py)
+3. For API data questions: Use `query_api` to query live data from the backend
+4. ALWAYS use `read_file` to read file contents - never just list directories
+5. Include the source reference (file path) in your answer
 
-Always be specific about which file contains the answer. Format section references as: `wiki/filename.md#section-anchor`
+Format section references as: `wiki/filename.md#section-anchor`
 
-If you cannot find the answer after exploring the available files, say so honestly."""
+IMPORTANT: After using any tool, you MUST read the result and extract the actual answer from it. Then respond with the answer and the source file path."""
 
 
 def call_llm(messages: list[dict], tools: list[dict] | None = None) -> dict:
