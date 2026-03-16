@@ -353,8 +353,12 @@ def run_agent(question: str) -> dict:
                 tool_calls_log.append({"tool": name, "args": args, "result": result})
 
                 # Append tool result to messages
-                # Generate a tool_call_id if not provided (some APIs don't include it)
-                tool_call_id = tool_call.get("id") or f"{name}_{len(tool_calls_log)}"
+                # Extract tool_call_id - try different possible locations
+                tool_call_id = tool_call.get("id")
+                if not tool_call_id:
+                    tool_call_id = f"call_{name}_{len(tool_calls_log)}"
+
+                print(f"Tool call ID: {tool_call_id}", file=sys.stderr)
                 messages.append(
                     {
                         "role": "tool",
