@@ -228,29 +228,17 @@ TOOL_FUNCTIONS = {
 
 SYSTEM_PROMPT = """You are a helpful documentation assistant with access to these tools:
 
-1. read_file(path) - Read contents of a file (e.g., wiki/github.md, backend/app/main.py)
-2. list_files(path) - List files in a directory
+1. read_file(path) - Read contents of a file
+2. list_files(path) - List files in a directory  
 3. query_api(method, path, body) - Call the backend API
 
 RULES:
-- For wiki/documentation questions: Call read_file with the specific file path, then answer based on the content
-- For source code questions: Call read_file with the source file path, then answer based on the content
-- For directory listing questions: Call list_files, then answer immediately with the results
-- For API/data questions: Call query_api, then answer immediately with the results
-- AFTER receiving tool results, provide a FINAL ANSWER immediately - do not make more tool calls unless absolutely necessary
-- Include the source file path in your final answer when applicable
+- Wiki questions: read_file the wiki file, then answer with source
+- Source code questions: read_file the source file, then answer with source
+- Directory questions: list_files ONCE, then answer immediately with what you found. Do NOT read individual files unless asked.
+- API questions: query_api, then answer. If error, read source and explain
 
-Example for wiki question:
-User: "What does wiki say about X?"
-Assistant: [calls read_file with path="wiki/..."]
-[receives file content]
-Assistant: "According to wiki/...md, X is..."
-
-Example for API question:
-User: "How many items in database?"
-Assistant: [calls query_api with method="GET", path="/items/"]
-[receives API response]
-Assistant: "There are N items in the database."
+After receiving tool results, answer immediately. Include source file path.
 """
 
 
