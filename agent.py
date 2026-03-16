@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 
 
 # Maximum number of tool calls per question
-MAX_TOOL_CALLS = 10
+MAX_TOOL_CALLS = 8
 
 
 def load_env():
