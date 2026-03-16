@@ -238,7 +238,7 @@ RULES:
 - For directory listing questions: Call list_files, then answer immediately with the results
 - For API/data questions: Call query_api, then answer immediately with the results
 - For API error questions: Call query_api first. If you get an error, read the relevant source code file to find the bug, then explain both the error and the bug
-- For multi-file questions (docker-compose, Dockerfile, etc.): Read each file and explain how they work together
+- For docker/infrastructure questions (docker-compose, Dockerfile, Caddyfile): Read docker-compose.yml, Dockerfile, and main.py. Then explain how requests flow through the system. Limit to 3-4 files maximum.
 - AFTER receiving tool results, provide a FINAL ANSWER immediately - do not make more tool calls unless absolutely necessary
 - Include the source file path in your final answer when applicable
 
@@ -260,6 +260,11 @@ User: "How many items in database?"
 Assistant: [calls query_api with method="GET", path="/items/"]
 [receives API response]
 Assistant: "There are N items in the database."
+
+Example for docker question:
+User: "Explain the HTTP request journey from browser to database."
+Assistant: [reads docker-compose.yml, Dockerfile, main.py]
+Assistant: "Request flows: Browser -> Caddy (reverse proxy) -> FastAPI (backend) -> PostgreSQL (database) -> back to browser."
 """
 
 
