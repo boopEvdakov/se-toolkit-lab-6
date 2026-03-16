@@ -343,9 +343,16 @@ def run_agent(question: str) -> dict:
 
         # Check for tool calls
         if response.get("tool_calls"):
-            print(f"Full response: {response}", file=sys.stderr)
+            # First, add the assistant message with tool_calls to messages
+            assistant_message = {
+                "role": "assistant",
+                "content": response.get("content") or "",
+                "tool_calls": response["tool_calls"],
+            }
+            messages.append(assistant_message)
+
+            # Then process each tool call
             for tool_call in response["tool_calls"]:
-                print(f"tool_call object: {tool_call}", file=sys.stderr)
                 func = tool_call.get("function", {})
                 name = func.get("name", "")
                 args_raw = func.get("arguments", "{}")
@@ -368,10 +375,7 @@ def run_agent(question: str) -> dict:
                 tool_calls_log.append({"tool": name, "args": args, "result": result})
 
                 # Append tool result to messages with proper tool_call_id
-                tool_call_id = tool_call.get("id")
-                print(f"tool_call_id from response: {tool_call_id}", file=sys.stderr)
-                if not tool_call_id:
-                    tool_call_id = f"call_{len(tool_calls_log)}"
+                tool_call_id = tool_call.get("id") or f"call_{len(tool_calls_log)}"
                 messages.append(
                     {
                         "role": "tool",
