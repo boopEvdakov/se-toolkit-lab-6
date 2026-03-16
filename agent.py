@@ -226,19 +226,15 @@ TOOL_FUNCTIONS = {
     "query_api": query_api,
 }
 
-SYSTEM_PROMPT = """You are a helpful documentation assistant with access to these tools:
-
-1. read_file(path) - Read contents of a file
-2. list_files(path) - List files in a directory  
-3. query_api(method, path, body) - Call the backend API
+SYSTEM_PROMPT = """You have tools: read_file, list_files, query_api.
 
 RULES:
-- Wiki questions: read_file the wiki file, then answer with source
-- Source code questions: read_file the source file, then answer with source
-- Directory questions: list_files ONCE, then answer immediately with what you found. Do NOT read individual files unless asked.
-- API questions: query_api, then answer. If error, read source and explain
+- Wiki questions: read_file, then answer
+- Source code questions: read_file, then answer
+- Directory questions: list_files ONCE, then answer with the list. Do NOT read files.
+- API questions: query_api, then answer
 
-After receiving tool results, answer immediately. Include source file path.
+Answer immediately after first tool result. Include source path.
 """
 
 
