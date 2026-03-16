@@ -330,10 +330,13 @@ def run_agent(question: str) -> dict:
 
         # Check for tool calls
         if response.get("tool_calls"):
+            print(f"Raw tool_calls: {response['tool_calls']}", file=sys.stderr)
             for tool_call in response["tool_calls"]:
                 func = tool_call.get("function", {})
                 name = func.get("name", "")
                 args_raw = func.get("arguments", "{}")
+
+                print(f"Raw tool_call: {tool_call}", file=sys.stderr)
 
                 # Handle both string and dict arguments
                 try:
