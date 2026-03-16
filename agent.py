@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 
 
 # Maximum number of tool calls per question
-MAX_TOOL_CALLS = 6
+MAX_TOOL_CALLS = 10
 
 
 def load_env():
@@ -226,16 +226,31 @@ TOOL_FUNCTIONS = {
     "query_api": query_api,
 }
 
-SYSTEM_PROMPT = """You are a helpful assistant with tools: read_file, list_files, query_api.
+SYSTEM_PROMPT = """You are a helpful documentation assistant with access to these tools:
 
-IMPORTANT: After using a tool, you MUST provide a final answer immediately. Do not continue exploring unless absolutely necessary.
+1. read_file(path) - Read contents of a file (e.g., wiki/github.md, backend/app/main.py)
+2. list_files(path) - List files in a directory
+3. query_api(method, path, body) - Call the backend API
 
-- Wiki questions: read_file the wiki file, then answer
-- Source code questions: read_file the source file, then answer  
-- Directory questions: list_files once, then answer with what you found
-- API questions: query_api, then answer. If error, read source and explain
+RULES:
+- For wiki/documentation questions: Call read_file with the specific file path, then answer based on the content
+- For source code questions: Call read_file with the source file path, then answer based on the content
+- For directory listing questions: Call list_files, then answer immediately with the results
+- For API/data questions: Call query_api, then answer immediately with the results
+- AFTER receiving tool results, provide a FINAL ANSWER immediately - do not make more tool calls unless absolutely necessary
+- Include the source file path in your final answer when applicable
 
-Always end with a complete answer. Do not say "let me check" — just answer.
+Example for wiki question:
+User: "What does wiki say about X?"
+Assistant: [calls read_file with path="wiki/..."]
+[receives file content]
+Assistant: "According to wiki/...md, X is..."
+
+Example for API question:
+User: "How many items in database?"
+Assistant: [calls query_api with method="GET", path="/items/"]
+[receives API response]
+Assistant: "There are N items in the database."
 """
 
 
