@@ -220,18 +220,31 @@ TOOL_FUNCTIONS = {
     "query_api": query_api,
 }
 
-SYSTEM_PROMPT = """You are a helpful documentation assistant. You have access to tools that let you read files, list directories, and query the backend API.
+SYSTEM_PROMPT = """You are a helpful documentation assistant with access to these tools:
 
-When asked a question about the project:
-1. For wiki/documentation questions: Use `read_file` to read the specific wiki file (e.g., wiki/github.md, wiki/ssh.md)
-2. For source code questions: Use `read_file` to read the specific source file (e.g., backend/app/main.py)
-3. For API data questions: Use `query_api` to query live data from the backend
-4. ALWAYS use `read_file` to read file contents - never just list directories
-5. Include the source reference (file path) in your answer
+1. read_file(path) - Read contents of a file (e.g., wiki/github.md, backend/app/main.py)
+2. list_files(path) - List files in a directory
+3. query_api(method, path, body) - Call the backend API
 
-Format section references as: `wiki/filename.md#section-anchor`
+RULES:
+- For wiki/documentation questions: ALWAYS call read_file with the specific file path
+- For source code questions: ALWAYS call read_file with the source file path  
+- For API/data questions: ALWAYS call query_api with method and path
+- After calling a tool, WAIT for the result before answering
+- Include the source file path in your final answer
 
-IMPORTANT: After using any tool, you MUST read the result and extract the actual answer from it. Then respond with the answer and the source file path."""
+Example for wiki question:
+User: "What does wiki say about X?"
+Assistant: [calls read_file with path="wiki/..."]
+[receives file content]
+Assistant: "According to wiki/...md, X is..."
+
+Example for API question:
+User: "How many items in database?"
+Assistant: [calls query_api with method="GET", path="/items/"]
+[receives API response]
+Assistant: "There are N items in the database."
+"""
 
 
 def call_llm(messages: list[dict], tools: list[dict] | None = None) -> dict:
@@ -330,13 +343,10 @@ def run_agent(question: str) -> dict:
 
         # Check for tool calls
         if response.get("tool_calls"):
-            print(f"Raw tool_calls: {response['tool_calls']}", file=sys.stderr)
             for tool_call in response["tool_calls"]:
                 func = tool_call.get("function", {})
                 name = func.get("name", "")
                 args_raw = func.get("arguments", "{}")
-
-                print(f"Raw tool_call: {tool_call}", file=sys.stderr)
 
                 # Handle both string and dict arguments
                 try:
@@ -355,13 +365,8 @@ def run_agent(question: str) -> dict:
                 # Log tool call
                 tool_calls_log.append({"tool": name, "args": args, "result": result})
 
-                # Append tool result to messages
-                # Extract tool_call_id - try different possible locations
-                tool_call_id = tool_call.get("id")
-                if not tool_call_id:
-                    tool_call_id = f"call_{name}_{len(tool_calls_log)}"
-
-                print(f"Tool call ID: {tool_call_id}", file=sys.stderr)
+                # Append tool result to messages with proper tool_call_id
+                tool_call_id = tool_call.get("id") or f"call_{len(tool_calls_log)}"
                 messages.append(
                     {
                         "role": "tool",
