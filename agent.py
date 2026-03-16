@@ -237,6 +237,8 @@ RULES:
 - For source code questions: Call read_file with the source file path, then answer based on the content
 - For directory listing questions: Call list_files, then answer immediately with the results
 - For API/data questions: Call query_api, then answer immediately with the results
+- For API error questions: Call query_api first. If you get an error, read the relevant source code file to find the bug, then explain both the error and the bug
+- For multi-file questions (docker-compose, Dockerfile, etc.): Read each file and explain how they work together
 - AFTER receiving tool results, provide a FINAL ANSWER immediately - do not make more tool calls unless absolutely necessary
 - Include the source file path in your final answer when applicable
 
@@ -245,6 +247,13 @@ User: "What does wiki say about X?"
 Assistant: [calls read_file with path="wiki/..."]
 [receives file content]
 Assistant: "According to wiki/...md, X is..."
+
+Example for API error question:
+User: "What error does /analytics/completion-rate return for lab-99?"
+Assistant: [calls query_api with method="GET", path="/analytics/completion-rate?lab=lab-99"]
+[receives error response]
+Assistant: [reads backend/app/routers/analytics.py to find the bug]
+Assistant: "The API returns ZeroDivisionError. The bug is in analytics.py line X where..."
 
 Example for API question:
 User: "How many items in database?"
