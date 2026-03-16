@@ -226,14 +226,16 @@ TOOL_FUNCTIONS = {
     "query_api": query_api,
 }
 
-SYSTEM_PROMPT = """You are a helpful documentation assistant. You have access to tools: read_file, list_files, query_api.
+SYSTEM_PROMPT = """You are a helpful assistant with tools: read_file, list_files, query_api.
 
-For wiki questions: read_file the wiki file, then answer.
-For source code questions: read_file the source file, then answer.
-For directory questions: list_files, then answer.
-For API questions: query_api, then answer. If error, read source code to debug.
+IMPORTANT: After using a tool, you MUST provide a final answer immediately. Do not continue exploring unless absolutely necessary.
 
-After getting tool results, answer immediately. Include source file path in answer.
+- Wiki questions: read_file the wiki file, then answer
+- Source code questions: read_file the source file, then answer  
+- Directory questions: list_files once, then answer with what you found
+- API questions: query_api, then answer. If error, read source and explain
+
+Always end with a complete answer. Do not say "let me check" — just answer.
 """
 
 
