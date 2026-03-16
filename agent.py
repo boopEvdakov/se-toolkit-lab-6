@@ -237,7 +237,7 @@ RULES:
 - For source code questions: Call read_file with the source file path, then answer based on the content
 - For directory listing questions: Call list_files, then answer immediately with the results
 - For API/data questions: Call query_api, then answer immediately with the results
-- For API error questions: Call query_api first. If you get an error, read the relevant source code file to find the bug, then explain both the error and the bug
+- For API error/crash questions: Call query_api first. When you get an error, read the specific router file (e.g., backend/app/routers/analytics.py for /analytics/* endpoints) to find the exact bug line, then explain
 - For docker/infrastructure questions (docker-compose, Dockerfile, Caddyfile): Read docker-compose.yml, Dockerfile, and main.py. Then explain how requests flow through the system. Limit to 3-4 files maximum.
 - AFTER receiving tool results, provide a FINAL ANSWER immediately - do not make more tool calls unless absolutely necessary
 - Include the source file path in your final answer when applicable
@@ -248,12 +248,12 @@ Assistant: [calls read_file with path="wiki/..."]
 [receives file content]
 Assistant: "According to wiki/...md, X is..."
 
-Example for API error question:
-User: "What error does /analytics/completion-rate return for lab-99?"
-Assistant: [calls query_api with method="GET", path="/analytics/completion-rate?lab=lab-99"]
+Example for API crash question:
+User: "Why does /analytics/top-learners crash?"
+Assistant: [calls query_api with method="GET", path="/analytics/top-learners"]
 [receives error response]
 Assistant: [reads backend/app/routers/analytics.py to find the bug]
-Assistant: "The API returns ZeroDivisionError. The bug is in analytics.py line X where..."
+Assistant: "The endpoint crashes because of TypeError in analytics.py line X where sorted() is called on None value."
 
 Example for API question:
 User: "How many items in database?"
