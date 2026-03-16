@@ -25,12 +25,18 @@ MAX_TOOL_CALLS = 7
 
 
 def load_env():
-    """Load environment variables from .env.agent.secret."""
+    """Load environment variables from .env.agent.secret and .env.docker.secret."""
+    # Load LLM config from .env.agent.secret
     env_file = Path(__file__).parent / ".env.agent.secret"
     if not env_file.exists():
         print(f"Error: {env_file} not found", file=sys.stderr)
         sys.exit(1)
     load_dotenv(env_file)
+
+    # Load backend API config from .env.docker.secret
+    docker_env_file = Path(__file__).parent / ".env.docker.secret"
+    if docker_env_file.exists():
+        load_dotenv(docker_env_file, override=False)
 
 
 def safe_path(path: str) -> Path:
